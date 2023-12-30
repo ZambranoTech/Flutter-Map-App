@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_app/config/theme/themes.dart';
+import 'package:maps_app/domain/entities/entities.dart';
 import 'package:maps_app/presentation/bloc/blocs.dart';
 
 part 'map_event.dart';
@@ -16,6 +17,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   final LocationBloc locationBloc;
   GoogleMapController? _mapController;
   late StreamSubscription<LocationState> locationStreamSubscription;
+  LatLng? mapCenter;
 
   MapBloc(this.locationBloc) : super(const MapState()) {
     on<MapInitializedEvent>(_onInitMap);
@@ -23,6 +25,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     on<StopFollowUserEvent>(_stopFollowUserEvent);
     on<UpdateUserPolylineEvent>(_updateUserPolylineEvent);
     on<OnToggleUserRoute>(_onToggleUserRoute);
+    on<DisplayPolulinesEvent>(_displayPolulinesEvent);
 
 
 
@@ -69,6 +72,56 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     emit(
       state.copyWith(
         polylines: currentPolylines
+      )
+    );
+  }
+
+  Future<void> drawRoutePolyline(RouteDestination destination) async {
+
+    final myRoute = Polyline(
+      polylineId: const PolylineId('route'),
+      color: Colors.black,
+      width: 5,
+      points: destination.points,
+      startCap: Cap.roundCap,
+      endCap: Cap.roundCap,
+    );
+
+    final startMarker = Marker(
+      markerId: const MarkerId('start'),
+      position: destination.points.first,
+      infoWindow: const InfoWindow(
+        title: 'Inicio',
+        snippet: 'Este es el punto de inicio de mi ruta'
+      )
+    );
+
+    final endMarker = Marker(
+      markerId: const MarkerId('end'),
+      position: destination.points.last,
+      infoWindow: const InfoWindow(
+        title: 'Inicio',
+        snippet: 'Este es el punto de inicio de mi ruta'
+      )
+    );
+
+    final currentPolylines = Map<String, Polyline>.from(state.polylines);
+    final currentMarkers = Map<String, Marker>.from(state.markers);
+    currentMarkers['start'] = startMarker;
+    currentMarkers['end'] = endMarker;
+
+
+    currentPolylines['route'] = myRoute;
+
+    add(DisplayPolulinesEvent(polylines: currentPolylines, markers: currentMarkers));
+
+  }
+
+  void _displayPolulinesEvent(DisplayPolulinesEvent event, Emitter<MapState> emit) { 
+    emit(
+      state.copyWith(
+        polylines: event.polylines,
+        markers: event.markers
       )
     );
   }

@@ -20,3 +20,13 @@ class UpdateUserPolylineEvent extends MapEvent {
   final List<LatLng> userLocations;
   const UpdateUserPolylineEvent({required this.userLocations});
 }
+
+class DisplayPolulinesEvent extends MapEvent {
+  final Map<String, Polyline> polylines;
+  final Map<String, Marker> markers;
+
+  const DisplayPolulinesEvent({
+    required this.polylines,
+    required this.markers
+  });
+}
