@@ -11,27 +11,27 @@ String placesResponseToJson(PlacesResponse data) => json.encode(data.toJson());
 
 class PlacesResponse {
     final String type;
-    final List<String> query;
+    // final List<String> query;
     final List<Feature> features;
     final String attribution;
 
     PlacesResponse({
         required this.type,
-        required this.query,
+        // required this.query,
         required this.features,
         required this.attribution,
     });
 
     factory PlacesResponse.fromJson(Map<String, dynamic> json) => PlacesResponse(
         type: json["type"],
-        query: List<String>.from(json["query"].map((x) => x)),
+        // query: List<String>.from(json["query"].map((x) => x)),
         features: List<Feature>.from(json["features"].map((x) => Feature.fromJson(x))),
         attribution: json["attribution"],
     );
 
     Map<String, dynamic> toJson() => {
         "type": type,
-        "query": List<dynamic>.from(query.map((x) => x)),
+        // "query": List<dynamic>.from(query.map((x) => x)),
         "features": List<dynamic>.from(features.map((x) => x.toJson())),
         "attribution": attribution,
     };
@@ -108,14 +108,12 @@ class Feature {
 
 class Context {
     final String id;
-    final String mapboxId;
     final String textEs;
     final String text;
     final String? wikidata;
 
     Context({
         required this.id,
-        required this.mapboxId,
         required this.textEs,
         required this.text,
         this.wikidata,
@@ -123,7 +121,6 @@ class Context {
 
     factory Context.fromJson(Map<String, dynamic> json) => Context(
         id: json["id"],
-        mapboxId: json["mapbox_id"],
         textEs: json["text_es"],
         text: json["text"],
         wikidata: json["wikidata"],
@@ -131,7 +128,6 @@ class Context {
 
     Map<String, dynamic> toJson() => {
         "id": id,
-        "mapbox_id": mapboxId,
         "text_es": textEs,
         "text": text,
         "wikidata": wikidata,

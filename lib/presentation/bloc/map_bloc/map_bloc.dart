@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:maps_app/config/helpers/helpers.dart';
 import 'package:maps_app/config/theme/themes.dart';
 import 'package:maps_app/domain/entities/entities.dart';
 import 'package:maps_app/presentation/bloc/blocs.dart';
@@ -87,22 +88,39 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       endCap: Cap.roundCap,
     );
 
+    double kms = destination.distance / 1000;
+    kms = (kms * 100).floorToDouble();
+    kms /= 100;
+
+    double tripDuration = (destination.duration / 60).floorToDouble();
+
+    // final startIconMarker = await getAssetImageMarker();
+    // final endIconMarker = await getNetworkImageMarker();
+
+    final startIconMarker = await getStartCustomMarker(tripDuration.toInt(), 'Mi Ubicación');
+    final endIconMarker = await getEndCustomMarker(kms.toInt(), destination.endPlace!.placeName);
+
     final startMarker = Marker(
       markerId: const MarkerId('start'),
       position: destination.points.first,
-      infoWindow: const InfoWindow(
-        title: 'Inicio',
-        snippet: 'Este es el punto de inicio de mi ruta'
-      )
+      icon: startIconMarker,
+      anchor: const Offset(0.1, 1)
+      // infoWindow: InfoWindow(
+      //   title: 'Inicio',
+      //   snippet: 'Kms : $kms, duration: ${tripDuration.toInt()}'
+      // )
     );
+
 
     final endMarker = Marker(
       markerId: const MarkerId('end'),
       position: destination.points.last,
-      infoWindow: const InfoWindow(
-        title: 'Inicio',
-        snippet: 'Este es el punto de inicio de mi ruta'
-      )
+      icon: endIconMarker,
+      // anchor: Offset(0, 0),
+      // infoWindow: InfoWindow(
+      //   title: destination.endPlace!.text,
+      //   snippet: destination.endPlace!.placeName
+      // )
     );
 
     final currentPolylines = Map<String, Polyline>.from(state.polylines);
@@ -114,6 +132,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     currentPolylines['route'] = myRoute;
 
     add(DisplayPolulinesEvent(polylines: currentPolylines, markers: currentMarkers));
+
+    await Future.delayed(const Duration(milliseconds: 300));
+    _mapController?.showMarkerInfoWindow(const MarkerId('start'));
 
   }
 

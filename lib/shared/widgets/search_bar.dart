@@ -5,7 +5,6 @@ import 'package:maps_app/config/helpers/show_loading_message.dart';
 import 'package:maps_app/domain/entities/entities.dart';
 import 'package:maps_app/presentation/bloc/blocs.dart';
 import 'package:maps_app/presentation/delegates/delegates.dart';
-import 'package:maps_app/shared/services/traffic_service.dart';
 
 class CustomSearchBar extends StatelessWidget {
   const CustomSearchBar({super.key});
@@ -39,12 +38,10 @@ class _CustomSearchBarBody extends StatelessWidget {
 
     if (result.position != null && locationBloc.state.lastKnownLocation != null) {
       final destination = await searchBloc.getCoorsStartToEnd( locationBloc.state.lastKnownLocation!,  result.position!);
-      
-      final routeDestination = RouteDestination(points: destination.points, duration: destination.duration, distance: destination.distance);
-      
+            
       if (context.mounted) showLoadingMessage(context);
 
-      mapBloc.drawRoutePolyline(routeDestination).then((value) => Navigator.pop(context));
+      mapBloc.drawRoutePolyline(destination).then((value) => Navigator.pop(context));
     }
     
   }

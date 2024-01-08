@@ -24,7 +24,6 @@ class TrafficService {
       BaseOptions(
         baseUrl: 'https://api.mapbox.com/geocoding/v5/mapbox.places',
         queryParameters: {
-          'liity': 7,
           'language': 'es',
           'access_token': accessToken,
         }
@@ -47,13 +46,26 @@ class TrafficService {
 
     final response = await _dioPlaces.get('/$query.json', 
       queryParameters: {
-        'proximity': '${proximity.longitude},${proximity.latitude}'
+        'proximity': '${proximity.longitude},${proximity.latitude}',
+        'limit': 7
       }
     );
     final placesResponse = PlacesResponse.fromJson(response.data);
 
     return placesResponse.features;
 
+  }
+
+  Future<Feature> getInformationByCors( LatLng coors ) async {
+    final response = await _dioPlaces.get('/${coors.longitude},${coors.latitude}.json', 
+      queryParameters: {
+        'limit': 1
+      }
+    );
+    
+    final placesResponse = PlacesResponse.fromJson(response.data);
+
+    return placesResponse.features.first;
   }
 
 }

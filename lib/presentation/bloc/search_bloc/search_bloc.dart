@@ -23,7 +23,16 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   Future<RouteDestination> getCoorsStartToEnd(LatLng start, LatLng end) async {
     final response = await trafficService.getCoorsStartToEnd(start, end);
 
-    return DestinationMapper.trafficMapBoxToRouteDestination(response);
+    RouteDestination routeDestination = DestinationMapper.trafficMapBoxToRouteDestination(response);
+
+    // Información del destino
+    final endPlace = await trafficService.getInformationByCors(end);
+
+    routeDestination = routeDestination.copyWith(
+      endPlace: endPlace
+    );
+
+    return routeDestination;
   }
 
   Future getPlacesByQuery( LatLng proximity, String query ) async {
